@@ -323,11 +323,8 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
     </div>
     <div class="focus-note" id="gear-focus-note"></div>
     <div class="sec">Final Drive</div>
-    <div class="input-row">
-      <div class="fg"><label>Min (speed end)</label><input type="number" step="0.01" id="fd-min" placeholder="e.g. 2.20" oninput="calc()"></div>
-      <div class="fg"><label>Max (accel end)</label><input type="number" step="0.01" id="fd-max" placeholder="e.g. 6.10" oninput="calc()"></div>
-    </div>
-    <div class="res-single"><div><div class="res-label">Final Drive</div><div class="res-sub" id="fd-sub">Enter min/max above</div></div><div class="res-single-val empty" id="fd-res">—</div></div>
+    <div class="fixed-note"><b>Fixed range: 2.20 – 6.10.</b> Move slider left (toward 2.20) for top speed, right (toward 6.10) for acceleration.</div>
+    <div class="res-single"><div><div class="res-label">Final Drive</div><div class="res-sub" id="fd-sub">Based on focus selected above</div></div><div class="res-single-val empty" id="fd-res">—</div></div>
     <div class="sec" style="margin-top:1rem">Individual Gears <span class="sec-tag">Set by eye in-game</span></div>
     <div style="background:var(--input);border:1px solid var(--border);border-radius:8px;padding:.75rem">
       <p style="font-size:11px;color:var(--muted);line-height:1.7"><b style="color:var(--text)">Guide:</b> Make gearbox as short as possible and as long as needed. Engine should reach near redline in each gear. First gear often needs to be longer to avoid hitting the limiter immediately after launch. Tune gearing after setting aero as they affect each other.</p>
@@ -368,16 +365,18 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
   <!-- SPRINGS -->
   <div id="tab-springs" class="tab-panel">
     <div class="sec">Spring Rate <span class="sec-tag">Enter range once</span></div>
+    <div class="fixed-note">In-game: go to <b>Springs</b> tab → move Front slider all the way left → note the number (Min) → all the way right → note the number (Max). Front and rear share the same range.</div>
     <div class="input-row">
-      <div class="fg"><label>Min</label><input type="number" step="0.1" id="sp-min" placeholder="min" oninput="calc()"></div>
-      <div class="fg"><label>Max</label><input type="number" step="0.1" id="sp-max" placeholder="max" oninput="calc()"></div>
+      <div class="fg"><label>Min (softest)</label><input type="number" step="0.1" id="sp-min" placeholder="e.g. 50.0" oninput="calc()"></div>
+      <div class="fg"><label>Max (stiffest)</label><input type="number" step="0.1" id="sp-max" placeholder="e.g. 800.0" oninput="calc()"></div>
     </div>
     <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
     <div class="res-row"><div class="res-label">Spring rate</div><div class="res-val empty" id="sp-f-res">—</div><div class="res-val empty" id="sp-r-res">—</div></div>
     <div class="sec">Ride Height <span class="sec-tag">Enter range once</span></div>
+    <div class="fixed-note">In-game: go to <b>Springs</b> tab → scroll to Ride Height → move Front slider all the way left → note the number (Min) → all the way right → note the number (Max).</div>
     <div class="input-row">
-      <div class="fg"><label>Min</label><input type="number" step="0.1" id="rh-min" placeholder="min" oninput="calc()"></div>
-      <div class="fg"><label>Max</label><input type="number" step="0.1" id="rh-max" placeholder="max" oninput="calc()"></div>
+      <div class="fg"><label>Min (lowest)</label><input type="number" step="0.1" id="rh-min" placeholder="e.g. 3.0" oninput="calc()"></div>
+      <div class="fg"><label>Max (highest)</label><input type="number" step="0.1" id="rh-max" placeholder="e.g. 8.0" oninput="calc()"></div>
     </div>
     <div class="res-header"><span>Axle</span><span>Front (max)</span><span>Rear (low)</span></div>
     <div class="res-row"><div class="res-label">Ride height</div><div class="res-val empty" id="rh-f-res">—</div><div class="res-val empty" id="rh-r-res">—</div></div>
@@ -407,9 +406,10 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
   <!-- AERO -->
   <div id="tab-aero" class="tab-panel">
     <div class="sec">Downforce <span class="sec-tag">Enter range once</span></div>
+    <div class="fixed-note">In-game: go to <b>Aero</b> tab → move Front slider all the way left → note the number (Min) → all the way right → note the number (Max). Front and rear share the same range.</div>
     <div class="input-row">
-      <div class="fg"><label>Min</label><input type="number" step="1" id="ae-min" placeholder="min" oninput="calc()"></div>
-      <div class="fg"><label>Max</label><input type="number" step="1" id="ae-max" placeholder="max" oninput="calc()"></div>
+      <div class="fg"><label>Min (least)</label><input type="number" step="1" id="ae-min" placeholder="e.g. 100" oninput="calc()"></div>
+      <div class="fg"><label>Max (most)</label><input type="number" step="1" id="ae-max" placeholder="e.g. 350" oninput="calc()"></div>
     </div>
     <div class="res-header"><span>Setting</span><span>Front (max)</span><span>Rear (~35%)</span></div>
     <div class="res-row"><div class="res-label">Downforce</div><div class="res-val empty" id="ae-f-res">—</div><div class="res-val empty" id="ae-r-res">—</div></div>
@@ -441,7 +441,7 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
       <div class="res-header"><span>Setting</span><span>Value</span><span></span></div>
       <div class="res-single"><div><div class="res-label">Acceleration</div><div class="res-sub">80–100%, start max</div></div><div class="res-single-val empty" id="df-r-acc-res">—</div></div>
       <div class="res-single"><div><div class="res-label">Deceleration</div><div class="res-sub">Start 0, adjust up if unstable</div></div><div class="res-single-val empty" id="df-r-dec-res">—</div></div>
-      <p class="note"><b>Guide (RWD):</b> Accel as high as possible (80–100%) for maximum momentum. Decel start at 0, increase only if car is unstable on corner entry. Rally diff recommended for smoother grip-to-oversteer transition.</p>
+      <p class="note"><b>Guide (RWD):</b> Accel 55–85% scaled by car weight — lighter/higher-powered cars need lower accel to prevent rear snap. 100% is too aggressive for most RWD cars. Decel 15% as a starting point for entry stability — reduce if car feels too locked on entry.<br>Rally diff recommended for smoother grip-to-oversteer transition.</p>
     </div>
 
     <div id="diff-fwd" class="diff-hidden">
@@ -449,7 +449,7 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
       <div class="sec">Front Differential</div>
       <div class="res-single"><div><div class="res-label">Acceleration</div><div class="res-sub">80–100%</div></div><div class="res-single-val empty" id="df-f-acc-res">—</div></div>
       <div class="res-single"><div><div class="res-label">Deceleration</div><div class="res-sub">Start 0</div></div><div class="res-single-val empty" id="df-f-dec-res">—</div></div>
-      <p class="note"><b>Guide (FWD):</b> High accel for traction. Off-road diff recommended for slightly less understeer.</p>
+      <p class="note"><b>Guide (FWD):</b> 85% accel for traction without over-locking. 5% decel — keep very low to avoid understeer on turn-in but above 0 for slight stability. Off-road diff recommended for slightly less understeer.</p>
     </div>
 
     <div id="diff-awd" class="diff-hidden">
@@ -581,18 +581,12 @@ function calc(){
 
   // ── GEARING — map focus position into provided range
   const focusPos={race:0.65,sprint:0.45,drag:0.80}[gearFocus]||0.65;
-  const fdMn=vn('fd-min'),fdMx=vn('fd-max');
+  // Gearing fixed 2.2-6.1
   const fdEl=$('fd-res');
-  if(valid(fdMn,fdMx)){
-    const fdVal=fromMin(fdMn,fdMx,focusPos);
-    fdEl.textContent=fdVal.toFixed(2);
-    fdEl.className='res-single-val';
-    $('fd-sub').textContent={race:'65% toward accel (circuit)',sprint:'45% toward speed',drag:'80% toward accel (drag)'}[gearFocus];
-  } else {
-    fdEl.textContent='—';
-    fdEl.className='res-single-val empty';
-    $('fd-sub').textContent='Enter min/max above';
-  }
+  const fdVal=fromMin(2.2,6.1,focusPos);
+  fdEl.textContent=fdVal.toFixed(2);
+  fdEl.className='res-single-val';
+  $('fd-sub').textContent={race:'65% toward accel — circuit',sprint:'45% toward speed — sprint',drag:'80% toward accel — drag'}[gearFocus];
 
   // ── ALIGNMENT — fixed ranges, guide-specific values
   // Camber: guide says -0.5 to -1.0 front, -0.3 to -0.5 rear
@@ -679,28 +673,29 @@ function calc(){
 
   // ── DIFF — fixed 0-100
   if(dt==='rwd'){
-    // Guide: accel as high as possible 80-100%, decel start 0
-    setRes('df-r-acc-res',100,0);
-    setRes('df-r-dec-res',0,0);
+    // RWD: guide says 80-100% but 100% causes snap on high-power cars
+    // Scale by weight — heavier/more powerful = slightly lower to manage snap
+    const rAccel=Math.round(clamp(75-(wf-0.5)*20,55,85));
+    setRes('df-r-acc-res',rAccel,0);
+    setRes('df-r-dec-res',15,0); // small decel for entry stability
   } else if(dt==='fwd'){
-    setRes('df-f-acc-res',100,0);
-    setRes('df-f-dec-res',0,0);
+    // FWD: high accel for traction, very low decel to avoid understeer on entry
+    setRes('df-f-acc-res',85,0);
+    setRes('df-f-dec-res',5,0);
   } else if(dt==='awd'){
-    // Guide: 100% both front and rear accel, decel 0 (rear +5 if needed)
+    // AWD allrounders: guide says 100%/0% both diffs
     setRes('df-af-acc-res',100,0);
     setRes('df-af-dec-res',0,0);
     setRes('df-ar-acc-res',100,0);
     setRes('df-ar-dec-res',0,0);
-    // Centre: 80-84% rear
     const cMin=vn('df-ctr-min'),cMax=vn('df-ctr-max');
-    // target 80% of the way through range toward rear bias
     setRes('df-ctr-res',valid(cMin,cMax)?clamp(fromMin(cMin,cMax,0.80),cMin,cMax):80,0);
   }
 }
 
 // ── GARAGE ─────────────────────────────────────────────────────────────────
 const FIELDS=['car-name','car-class','drivetrain','car-power','car-weight','weight-unit','tyre-compound','fw-slider',
-  'fd-min','fd-max','sp-min','sp-max','rh-min','rh-max','ae-min','ae-max','df-ctr-min','df-ctr-max'];
+  'sp-min','sp-max','rh-min','rh-max','ae-min','ae-max','df-ctr-min','df-ctr-max'];
 function readState(){const s={};FIELDS.forEach(id=>{const e=$(id);if(e)s[id]=e.value});return s}
 function applyState(s){FIELDS.forEach(id=>{const e=$(id);if(e&&s[id]!==undefined)e.value=s[id]});updateDiffTabs();setGearFocus(gearFocus);calc()}
 function loadGarage(){try{return JSON.parse(localStorage.getItem('fh6_garage_g4')||'[]')}catch{return[]}}
