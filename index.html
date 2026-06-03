@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FH6 Tune G4">
+<meta name="theme-color" content="#0a0f1a">
+<title>FH6 Tune · G4</title>
+<link id="pwa-manifest" rel="manifest">
+<style>
+:root{
+  --bg:#0a0f1a;
+  --surface:#0f1520;
+  --surface2:#141c2e;
+  --border:#1e2d4a;
+  --border2:#2a3d5e;
+  --accent:#2d8cff;
+  --accent2:#00d4ff;
+  --accent3:#5b9fff;
+  --text:#dce8ff;
+  --muted:#4a6080;
+  --input:#080e1a;
+  --res-bg:#0a1a30;
+  --res-text:#2d8cff;
+  --res-border:#1a3a6a;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'SF Pro Text',sans-serif;font-size:14px;height:100%;overflow:hidden;display:flex;flex-direction:column}
+
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:2px solid var(--accent);padding:calc(var(--safe-top) + 10px) 1rem 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr-left{display:flex;flex-direction:column;gap:1px}
+.hdr h1{font-size:17px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.hdr-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.hdr-right{display:flex;gap:6px}
+.hdr-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.hdr-btn.blue{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* SCROLL */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 calc(var(--safe-bot) + 60px)}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.85rem;margin:.75rem .75rem 0}
+.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.6rem}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.fg input,.fg select{background:var(--input);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:8px;font-size:14px;font-weight:600;width:100%;outline:none;-webkit-appearance:none;appearance:none}
+.fg input[type=number]{text-align:center;font-size:16px}
+.fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a6080'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.fg input:focus,.fg select:focus{border-color:var(--accent)}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.slider-row label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+input[type=range]{flex:1;accent-color:var(--accent);height:4px}
+.badge{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:13px;font-weight:700;min-width:42px;text-align:center;color:var(--accent)}
+.badge.rear{color:var(--accent2)}
+
+/* TABS */
+.tab-wrap{flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 .75rem}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);padding:10px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* PANELS */
+.tab-panel{display:none;padding:.75rem}
+.tab-panel.active{display:block}
+
+/* SECTION TITLES */
+.sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--accent);margin:1rem 0 .5rem;padding-bottom:3px;border-bottom:1px solid var(--border)}
+.sec:first-child{margin-top:0}
+.sec-tag{display:inline-block;background:#0a1a30;border:1px solid var(--res-border);border-radius:3px;color:var(--accent2);font-size:9px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+
+/* SINGLE INPUT ROW */
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.5rem}
+.input-row .fg label{font-size:9px}
+
+/* RESULT ROWS — two columns F/R */
+.res-header{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:3px}
+.res-header span{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:center}
+.res-header span:first-child{text-align:left}
+.res-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
+.res-row:last-of-type{border-bottom:none}
+.res-label{font-size:12px;color:var(--text)}
+.res-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.res-val{background:var(--res-bg);border:1px solid var(--res-border);border-radius:6px;padding:7px 8px;font-size:17px;font-weight:800;color:var(--res-text);text-align:center;letter-spacing:.01em}
+.res-val.empty{background:var(--input);border-color:var(--border);color:var(--muted);font-size:11px;font-weight:400}
+
+/* SINGLE RESULT ROW (no F/R split) */
+.res-single{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.res-single:last-of-type{border-bottom:none}
+.res-single-val{background:var(--res-bg);border:1px solid var(--res-border);border-radius:6px;padding:7px 14px;font-size:17px;font-weight:800;color:var(--res-text);text-align:center;min-width:80px}
+.res-single-val.empty{background:var(--input);border-color:var(--border);color:var(--muted);font-size:11px;font-weight:400}
+
+/* FIXED RANGE TAG */
+.fixed-note{font-size:10px;color:var(--muted);margin-bottom:.5rem;padding:5px 8px;background:var(--input);border:1px solid var(--border);border-radius:6px}
+.fixed-note b{color:var(--text)}
+
+/* NOTE */
+.note{font-size:11px;color:var(--muted);margin-top:.75rem;line-height:1.7;padding-top:.6rem;border-top:1px solid var(--border)}
+.note b{color:var(--text)}
+
+/* FIX-IT */
+.fix-card{background:var(--input);border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.5rem}
+.fix-hdr{display:flex;align-items:center;gap:6px;margin-bottom:.35rem}
+.fix-id{border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;text-transform:uppercase}
+.fix-id.u{background:#0a1a30;color:var(--accent2)}
+.fix-id.o{background:#1a1500;color:#f0c040}
+.fix-id.b{background:#0a200a;color:#5adf7a}
+.fix-title{font-size:13px;font-weight:700;color:var(--text)}
+.fix-sym{font-size:11px;color:var(--muted);margin-bottom:.35rem;font-style:italic}
+.fix-list{list-style:none}
+.fix-list li{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);font-size:12px}
+.fix-list li:last-child{border-bottom:none}
+.fix-dir{font-weight:700;color:var(--accent)}
+.fix-dir.dn{color:var(--accent2)}
+
+/* PHASE GRID */
+.phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.75rem}
+.phase-card{background:var(--input);border:1px solid var(--border);border-radius:7px;padding:.6rem}
+.phase-num{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
+.phase-txt{font-size:10px;color:var(--muted);line-height:1.6}
+
+/* GEAR FOCUS */
+.focus-row{display:flex;gap:5px;margin-bottom:.75rem;overflow-x:auto;scrollbar-width:none}
+.focus-row::-webkit-scrollbar{display:none}
+.focus-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--muted);padding:7px 12px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.focus-btn.active{background:var(--res-bg);border-color:var(--accent);color:var(--accent)}
+.focus-note{background:var(--input);border:1px solid var(--border);border-radius:6px;padding:.6rem .75rem;font-size:11px;color:var(--muted);margin-bottom:.75rem;line-height:1.6}
+
+/* LIVE STATS */
+.live-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:.75rem .85rem 0}
+.live-hdr h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text)}
+.live-toggle{font-size:11px;color:var(--muted)}
+.live-body{padding:.75rem;display:none}
+.live-body.open{display:block}
+.live-stat-row{display:grid;grid-template-columns:100px 1fr 70px 65px;gap:5px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.live-stat-row:last-child{border-bottom:none}
+.lsl{font-size:11px;color:var(--text)}
+.live-inp{background:var(--input);border:1px solid var(--border);color:var(--text);padding:5px 6px;border-radius:5px;font-size:14px;font-weight:700;text-align:center;width:100%;outline:none;-webkit-appearance:none}
+.live-tgt{font-size:9px;color:var(--muted);text-align:center}
+.live-ind{border-radius:4px;padding:3px 4px;font-size:9px;font-weight:700;text-align:center;text-transform:uppercase}
+.live-ind.good{background:#0a200a;border:1px solid #2a5a2a;color:#5adf7a}
+.live-ind.low{background:#1a1500;border:1px solid #5a4000;color:#f0c040}
+.live-ind.high{background:#1a0a0a;border:1px solid #5a1a1a;color:#f06060}
+.live-ind.neutral{background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.perf-row{display:grid;grid-template-columns:100px 1fr 1fr 50px;gap:5px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.perf-row:last-child{border-bottom:none}
+.perf-d{font-size:12px;font-weight:700;text-align:center}
+.perf-d.better{color:#5adf7a}
+.perf-d.worse{color:#f06060}
+.perf-d.same{color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bot)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:1.25rem;width:100%;max-width:480px}
+.modal h3{font-size:15px;font-weight:800;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.modal input{background:var(--input);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:15px;width:100%;outline:none;margin-bottom:.75rem;-webkit-appearance:none}
+.modal-btns{display:flex;gap:8px}
+.mbtn{flex:1;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:12px;border-radius:8px;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer}
+.mbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* GARAGE */
+.garage-panel{display:none;margin:.75rem .75rem 0}
+.garage-panel.open{display:block}
+.garage-inner{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.garage-hdr{background:var(--surface2);padding:.6rem .75rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.garage-hdr h2{font-size:12px;font-weight:700;text-transform:uppercase;color:var(--accent)}
+.garage-list{padding:.5rem .75rem;display:flex;flex-wrap:wrap;gap:5px;min-height:36px}
+.gc{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.gc-name{font-size:12px;font-weight:600}
+.gc-meta{font-size:10px;color:var(--muted)}
+.gc-del{background:none;border:none;color:var(--muted);font-size:16px;padding:0 2px;cursor:pointer;line-height:1}
+
+/* DIFF */
+.diff-ph{color:var(--muted);font-size:12px;padding:.5rem 0;text-align:center}
+.diff-hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>FH6 Tune · G4</h1>
+    <span class="hdr-sub">Guide 4 — Competitive AWD/RWD</span>
+  </div>
+  <div class="hdr-right">
+    <button class="hdr-btn" onclick="toggleGarage()">🚗 Garage</button>
+    <button class="hdr-btn blue" onclick="openSave()">Save</button>
+  </div>
+</div>
+
+<div class="scroll">
+
+  <!-- GARAGE -->
+  <div class="garage-panel" id="garage-panel">
+    <div class="garage-inner">
+      <div class="garage-hdr"><h2>Saved Cars</h2><button class="hdr-btn" style="font-size:10px;padding:4px 8px" onclick="toggleGarage()">Close</button></div>
+      <div class="garage-list" id="garage-list"><span style="font-size:11px;color:var(--muted)">No saved cars yet.</span></div>
+    </div>
+  </div>
+
+  <!-- CAR SETUP -->
+  <div class="card">
+    <div class="card-title">Car Setup</div>
+    <div class="fg" style="margin-bottom:6px"><label>Car name</label><input type="text" id="car-name" placeholder="e.g. Lamborghini Huracán"></div>
+    <div class="form-grid three" style="margin-bottom:6px">
+      <div class="fg"><label>Class</label><input type="text" id="car-class" placeholder="S1 900"></div>
+      <div class="fg"><label>Power (hp)</label><input type="number" id="car-power" placeholder="650" oninput="calc()"></div>
+      <div class="fg"><label>Weight</label><input type="number" id="car-weight" placeholder="1197" oninput="calc()"></div>
+    </div>
+    <div class="form-grid">
+      <div class="fg">
+        <label>Drivetrain</label>
+        <select id="drivetrain" onchange="updateDiffTabs();calc()">
+          <option value="">Select…</option>
+          <option value="fwd">FWD</option>
+          <option value="rwd">RWD</option>
+          <option value="awd">AWD</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Weight unit</label>
+        <select id="weight-unit" onchange="calc()">
+          <option value="kg">kg</option>
+          <option value="lbs">lbs</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPOUND + WEIGHT DIST -->
+  <div class="card">
+    <div class="card-title">Tyres &amp; Weight Distribution</div>
+    <div class="fg" style="margin-bottom:8px">
+      <label>Tyre compound</label>
+      <select id="tyre-compound" onchange="calc()">
+        <option value="rally">Rally (21–26 PSI) ★ AWD allrounder</option>
+        <option value="semi">Semi-slick (28–32 PSI)</option>
+        <option value="slick">Race Slick (28–32 PSI)</option>
+        <option value="street">Street (25–27 PSI)</option>
+        <option value="sport">Sport (26–28 PSI)</option>
+        <option value="drift">Drift (28–32 PSI)</option>
+        <option value="drag">Drag (18–22 PSI)</option>
+      </select>
+    </div>
+    <div class="card-title" style="margin-bottom:4px">Front weight % — from Mech. Balance × 100</div>
+    <div class="slider-row">
+      <label>Front</label>
+      <input type="range" min="20" max="80" step="1" value="45" id="fw-slider">
+      <span class="badge" id="fw-val">45%</span>
+      <label>Rear</label>
+      <span class="badge rear" id="rw-val">55%</span>
+    </div>
+  </div>
+
+  <!-- LIVE STATS -->
+  <div class="card" style="padding:0">
+    <div class="live-hdr" onclick="toggleLive()">
+      <h2>📊 Live Car Stats</h2>
+      <span class="live-toggle" id="live-toggle">▼ expand</span>
+    </div>
+    <div class="live-body" id="live-body">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px">Balance &amp; Aero</div>
+      <div style="display:grid;grid-template-columns:100px 1fr 70px 65px;gap:5px;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">
+        <div></div><div style="text-align:center">Current</div><div style="text-align:center">Target</div><div style="text-align:center">Status</div>
+      </div>
+      <div class="live-stat-row"><div class="lsl">Mech. Balance</div><input class="live-inp" type="number" step="0.01" id="lv-mech" placeholder="0.45" oninput="updateLive()"><div class="live-tgt">0.55–0.65</div><div class="live-ind neutral" id="lv-mech-ind">—</div></div>
+      <div class="live-stat-row"><div class="lsl">Aero Balance</div><input class="live-inp" type="number" step="0.01" id="lv-aero-bal" placeholder="0.41" oninput="updateLive()"><div class="live-tgt">0.40–0.45</div><div class="live-ind neutral" id="lv-aero-bal-ind">—</div></div>
+      <div class="live-stat-row" style="border-bottom:none"><div class="lsl">Aero Efficiency</div><input class="live-inp" type="number" step="0.001" id="lv-aero-eff" placeholder="0.853" oninput="updateLive()"><div class="live-tgt">Higher better</div><div class="live-ind neutral" id="lv-aero-eff-ind">—</div></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:10px 0 5px">Performance — Before vs After</div>
+      <div style="display:grid;grid-template-columns:100px 1fr 1fr 50px;gap:5px;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">
+        <div></div><div style="text-align:center">Before</div><div style="text-align:center">After</div><div style="text-align:center">Δ</div>
+      </div>
+      <div class="perf-row"><div class="lsl">60–0 mph (m)</div><input class="live-inp" type="number" id="pf-bk60-b" oninput="updateLive()"><input class="live-inp" type="number" id="pf-bk60-a" oninput="updateLive()"><div class="perf-d same" id="pd-bk60">—</div></div>
+      <div class="perf-row"><div class="lsl">0–60 mph (s)</div><input class="live-inp" type="number" id="pf-ac60-b" oninput="updateLive()"><input class="live-inp" type="number" id="pf-ac60-a" oninput="updateLive()"><div class="perf-d same" id="pd-ac60">—</div></div>
+      <div class="perf-row"><div class="lsl">Top speed</div><input class="live-inp" type="number" id="pf-spd-b" oninput="updateLive()"><input class="live-inp" type="number" id="pf-spd-a" oninput="updateLive()"><div class="perf-d same" id="pd-spd">—</div></div>
+      <div class="perf-row" style="border-bottom:none"><div class="lsl">Lat G @ 60</div><input class="live-inp" type="number" id="pf-lg-b" oninput="updateLive()"><input class="live-inp" type="number" id="pf-lg-a" oninput="updateLive()"><div class="perf-d same" id="pd-lg">—</div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tyres',this)">Tyres</button>
+      <button class="tab-btn" onclick="showTab('gearing',this)">Gearing</button>
+      <button class="tab-btn" onclick="showTab('align',this)">Alignment</button>
+      <button class="tab-btn" onclick="showTab('arb',this)">ARBs</button>
+      <button class="tab-btn" onclick="showTab('springs',this)">Springs</button>
+      <button class="tab-btn" onclick="showTab('damping',this)">Damping</button>
+      <button class="tab-btn" onclick="showTab('aero',this)">Aero</button>
+      <button class="tab-btn" onclick="showTab('brakes',this)">Brakes</button>
+      <button class="tab-btn" onclick="showTab('diff',this)">Diff</button>
+      <button class="tab-btn" onclick="showTab('fixit',this)">🔧 Fix-It</button>
+    </div>
+  </div>
+
+  <!-- TYRES -->
+  <div id="tab-tyres" class="tab-panel active">
+    <div class="fixed-note"><b>Fixed range: 15–55 PSI.</b> One suggestion for each axle based on weight distribution.</div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Pressure (PSI)</div><div class="res-val empty" id="tp-f-res">—</div><div class="res-val empty" id="tp-r-res">—</div></div>
+    <p class="note"><b>Guide:</b> Rally tires preferred for AWD allrounders — great grip, very PI efficient. Pressure 1.5–1.8 bar / 21–26 PSI with rally. Heavier cars need more pressure. Lighter need less. Rear slightly softer (heavier axle = more load).</p>
+  </div>
+
+  <!-- GEARING -->
+  <div id="tab-gearing" class="tab-panel">
+    <div class="focus-row">
+      <button class="focus-btn active" id="focus-race" onclick="setGearFocus('race')">🏁 Circuit</button>
+      <button class="focus-btn" id="focus-sprint" onclick="setGearFocus('sprint')">⚡ Sprint</button>
+      <button class="focus-btn" id="focus-drag" onclick="setGearFocus('drag')">🚀 0–60</button>
+    </div>
+    <div class="focus-note" id="gear-focus-note"></div>
+    <div class="sec">Final Drive</div>
+    <div class="input-row">
+      <div class="fg"><label>Min (speed end)</label><input type="number" step="0.01" id="fd-min" placeholder="e.g. 2.20" oninput="calc()"></div>
+      <div class="fg"><label>Max (accel end)</label><input type="number" step="0.01" id="fd-max" placeholder="e.g. 6.10" oninput="calc()"></div>
+    </div>
+    <div class="res-single"><div><div class="res-label">Final Drive</div><div class="res-sub" id="fd-sub">Enter min/max above</div></div><div class="res-single-val empty" id="fd-res">—</div></div>
+    <div class="sec" style="margin-top:1rem">Individual Gears <span class="sec-tag">Set by eye in-game</span></div>
+    <div style="background:var(--input);border:1px solid var(--border);border-radius:8px;padding:.75rem">
+      <p style="font-size:11px;color:var(--muted);line-height:1.7"><b style="color:var(--text)">Guide:</b> Make gearbox as short as possible and as long as needed. Engine should reach near redline in each gear. First gear often needs to be longer to avoid hitting the limiter immediately after launch. Tune gearing after setting aero as they affect each other.</p>
+    </div>
+    <p class="note" id="gear-bottom-note"></p>
+  </div>
+
+  <!-- ALIGNMENT -->
+  <div id="tab-align" class="tab-panel">
+    <div class="fixed-note"><b>Fixed ranges:</b> Camber -5 to +5° · Toe -5 to +5° · Caster 1–7°. Front and rear get unique values from one set of inputs.</div>
+    <div class="sec">Camber</div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Camber (°)</div><div class="res-val empty" id="ca-f-res">—</div><div class="res-val empty" id="ca-r-res">—</div></div>
+    <div class="sec">Toe</div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Toe (°)</div><div class="res-val empty" id="toe-f-res">—</div><div class="res-val empty" id="toe-r-res">—</div></div>
+    <div class="sec">Front Caster <span class="sec-tag">Fixed: 1–7°</span></div>
+    <div class="res-single"><div><div class="res-label">Caster angle</div></div><div class="res-single-val empty" id="cast-res">—</div></div>
+    <p class="note">
+      <b>Camber:</b> Guide says -0.5 to -1.0° front, -0.3 to -0.5° rear. Stay between -1.0 and 0. Front slightly more negative than rear. Rear camber can help reduce understeer.<br>
+      <b>Toe:</b> Adjust last, only if needed. Front toe-out helps understeer. Decrease rear toe for more rear stability. Keep very close to 0.<br>
+      <b>Caster:</b> 6.5–7.0° always.
+    </p>
+  </div>
+
+  <!-- ARBs -->
+  <div id="tab-arb" class="tab-panel">
+    <div class="fixed-note"><b>Fixed range: 1–65.</b> AWD starts at 1/65 (max). One input — front and rear get unique values.</div>
+    <div class="res-header"><span>Setting</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">ARB stiffness</div><div class="res-val empty" id="arb-f-res">—</div><div class="res-val empty" id="arb-r-res">—</div></div>
+    <p class="note">
+      <b>Guide (AWD):</b> Start at 1 front / 65 rear (max rear). If oversteer → reduce rear or increase front. The closer the values are to each other, the more understeer.<br>
+      <b>RWD:</b> Front lower than rear. Softer front = more oversteer. Softer rear = more understeer.<br>
+      After changing ARBs, compensate with springs in opposite direction.
+    </p>
+  </div>
+
+  <!-- SPRINGS -->
+  <div id="tab-springs" class="tab-panel">
+    <div class="sec">Spring Rate <span class="sec-tag">Enter range once</span></div>
+    <div class="input-row">
+      <div class="fg"><label>Min</label><input type="number" step="0.1" id="sp-min" placeholder="min" oninput="calc()"></div>
+      <div class="fg"><label>Max</label><input type="number" step="0.1" id="sp-max" placeholder="max" oninput="calc()"></div>
+    </div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Spring rate</div><div class="res-val empty" id="sp-f-res">—</div><div class="res-val empty" id="sp-r-res">—</div></div>
+    <div class="sec">Ride Height <span class="sec-tag">Enter range once</span></div>
+    <div class="input-row">
+      <div class="fg"><label>Min</label><input type="number" step="0.1" id="rh-min" placeholder="min" oninput="calc()"></div>
+      <div class="fg"><label>Max</label><input type="number" step="0.1" id="rh-max" placeholder="max" oninput="calc()"></div>
+    </div>
+    <div class="res-header"><span>Axle</span><span>Front (max)</span><span>Rear (low)</span></div>
+    <div class="res-row"><div class="res-label">Ride height</div><div class="res-val empty" id="rh-f-res">—</div><div class="res-val empty" id="rh-r-res">—</div></div>
+    <p class="note">
+      <b>Guide:</b> Springs align with weight distribution — rear-heavy car needs higher rear springs. Soft overall settings preferred.<br>
+      Oversteer on exit → stiffen front / soften rear springs. Understeer → soften front / stiffen rear.<br>
+      <b>Ride height:</b> Max front for best turn-in response. Lower rear for rotation and top speed.
+    </p>
+  </div>
+
+  <!-- DAMPING -->
+  <div id="tab-damping" class="tab-panel">
+    <div class="fixed-note"><b>Fixed range: 1–20 (rebound &amp; bump).</b> Enter range once — front and rear get unique values.</div>
+    <div class="sec">Rebound <span class="sec-tag">Middle of range</span></div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Rebound stiffness</div><div class="res-val empty" id="rb-f-res">—</div><div class="res-val empty" id="rb-r-res">—</div></div>
+    <div class="sec">Bump <span class="sec-tag">Very low, ~40% rebound</span></div>
+    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-row"><div class="res-label">Bump stiffness</div><div class="res-val empty" id="bm-f-res">—</div><div class="res-val empty" id="bm-r-res">—</div></div>
+    <p class="note">
+      <b>Guide:</b> Rebound in the middle (~8–11). Bump very low (~3–5).<br>
+      Higher rear bump = more initial rotation + more stability under acceleration.<br>
+      Damping is connected to springs — fix springs first before adjusting damping extremes.
+    </p>
+  </div>
+
+  <!-- AERO -->
+  <div id="tab-aero" class="tab-panel">
+    <div class="sec">Downforce <span class="sec-tag">Enter range once</span></div>
+    <div class="input-row">
+      <div class="fg"><label>Min</label><input type="number" step="1" id="ae-min" placeholder="min" oninput="calc()"></div>
+      <div class="fg"><label>Max</label><input type="number" step="1" id="ae-max" placeholder="max" oninput="calc()"></div>
+    </div>
+    <div class="res-header"><span>Setting</span><span>Front (max)</span><span>Rear (~35%)</span></div>
+    <div class="res-row"><div class="res-label">Downforce</div><div class="res-val empty" id="ae-f-res">—</div><div class="res-val empty" id="ae-r-res">—</div></div>
+    <p class="note">
+      <b>Guide:</b> Front always maximum downforce for highest corner speed in high-speed turns.<br>
+      Rear adjusted for stability — too low = oversteer, too high = understeer + drag.<br>
+      Start rear at ~40% of range and adjust by feel. For grippy AWD cars a lower rear value works well.
+    </p>
+  </div>
+
+  <!-- BRAKES -->
+  <div id="tab-brakes" class="tab-panel">
+    <div class="fixed-note"><b>Fixed ranges:</b> Balance 0–100 · Pressure 0–200.</div>
+    <div class="res-single"><div><div class="res-label">Brake balance</div><div class="res-sub">Toward rear for rotation</div></div><div class="res-single-val empty" id="br-bal-res">—</div></div>
+    <div class="res-single"><div><div class="res-label">Brake pressure</div><div class="res-sub">Personal preference</div></div><div class="res-single-val empty" id="br-pres-res">—</div></div>
+    <p class="note">
+      <b>Guide:</b> 48–49% (slightly toward rear) for trail braking and rotation. More front = more stable but less rotation. More rear = easier trail braking but risk of spin.<br>
+      Pressure is personal preference — high enough that brakes can lock up if needed. Start at 100%.
+    </p>
+  </div>
+
+  <!-- DIFFERENTIAL -->
+  <div id="tab-diff" class="tab-panel">
+    <div id="diff-none" class="diff-ph">Select a drivetrain above</div>
+
+    <div id="diff-rwd" class="diff-hidden">
+      <div class="fixed-note"><b>Fixed range: 0–100.</b></div>
+      <div class="sec">Rear Differential</div>
+      <div class="res-header"><span>Setting</span><span>Value</span><span></span></div>
+      <div class="res-single"><div><div class="res-label">Acceleration</div><div class="res-sub">80–100%, start max</div></div><div class="res-single-val empty" id="df-r-acc-res">—</div></div>
+      <div class="res-single"><div><div class="res-label">Deceleration</div><div class="res-sub">Start 0, adjust up if unstable</div></div><div class="res-single-val empty" id="df-r-dec-res">—</div></div>
+      <p class="note"><b>Guide (RWD):</b> Accel as high as possible (80–100%) for maximum momentum. Decel start at 0, increase only if car is unstable on corner entry. Rally diff recommended for smoother grip-to-oversteer transition.</p>
+    </div>
+
+    <div id="diff-fwd" class="diff-hidden">
+      <div class="fixed-note"><b>Fixed range: 0–100.</b></div>
+      <div class="sec">Front Differential</div>
+      <div class="res-single"><div><div class="res-label">Acceleration</div><div class="res-sub">80–100%</div></div><div class="res-single-val empty" id="df-f-acc-res">—</div></div>
+      <div class="res-single"><div><div class="res-label">Deceleration</div><div class="res-sub">Start 0</div></div><div class="res-single-val empty" id="df-f-dec-res">—</div></div>
+      <p class="note"><b>Guide (FWD):</b> High accel for traction. Off-road diff recommended for slightly less understeer.</p>
+    </div>
+
+    <div id="diff-awd" class="diff-hidden">
+      <div class="fixed-note"><b>Fixed range: 0–100 all settings.</b></div>
+      <div class="sec">Front Differential</div>
+      <div class="res-header"><span>Setting</span><span>Value</span><span></span></div>
+      <div class="res-single"><div><div class="res-label">Acceleration</div></div><div class="res-single-val empty" id="df-af-acc-res">—</div></div>
+      <div class="res-single"><div><div class="res-label">Deceleration</div></div><div class="res-single-val empty" id="df-af-dec-res">—</div></div>
+      <div class="sec">Rear Differential</div>
+      <div class="res-single"><div><div class="res-label">Acceleration</div></div><div class="res-single-val empty" id="df-ar-acc-res">—</div></div>
+      <div class="res-single"><div><div class="res-label">Deceleration</div></div><div class="res-single-val empty" id="df-ar-dec-res">—</div></div>
+      <div class="sec">Centre Split <span class="sec-tag">~80–84% rear</span></div>
+      <div class="input-row">
+        <div class="fg"><label>Min</label><input type="number" step="1" id="df-ctr-min" placeholder="min" oninput="calc()"></div>
+        <div class="fg"><label>Max</label><input type="number" step="1" id="df-ctr-max" placeholder="max" oninput="calc()"></div>
+      </div>
+      <div class="res-single"><div><div class="res-label">Centre balance</div><div class="res-sub">% to rear axle</div></div><div class="res-single-val empty" id="df-ctr-res">—</div></div>
+      <p class="note"><b>Guide (AWD):</b> Accel 100% both front and rear for maximum momentum — reduce only if too aggressive. Decel start at 0, increase rear by 5 only if aggressive throttle behavior. Centre: start at 80%, go to 84% if car can handle it (wide tyres help). Never push power balance below 50% rear.</p>
+    </div>
+  </div>
+
+  <!-- FIX-IT -->
+  <div id="tab-fixit" class="tab-panel">
+    <div class="sec">Corner Phases</div>
+    <div class="phase-grid">
+      <div class="phase-card"><div class="phase-num">01 Braking</div><div class="phase-txt">Brakes, front bump, front weight</div></div>
+      <div class="phase-card"><div class="phase-num">02 Turn-in</div><div class="phase-txt">Camber, caster, front rebound, decel diff, front ARB</div></div>
+      <div class="phase-card"><div class="phase-num">03 Mid-corner</div><div class="phase-txt">ARBs, springs, ride height, downforce</div></div>
+      <div class="phase-card"><div class="phase-num">04 Exit</div><div class="phase-txt">Accel diff, rear springs/ARB, rear damping, rear toe</div></div>
+    </div>
+    <div class="sec">Understeer</div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id u">U1</span><span class="fix-title">Entry Understeer</span></div><div class="fix-sym">Won't turn in under braking</div><ul class="fix-list"><li>Front ARB <span class="fix-dir dn">Soften</span></li><li>Front spring <span class="fix-dir dn">Soften</span></li><li>Front rebound <span class="fix-dir dn">Soften</span></li><li>Brake bias <span class="fix-dir dn">More rear</span></li><li>Diff decel <span class="fix-dir dn">Reduce</span></li><li>Caster <span class="fix-dir">Increase</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id u">U2</span><span class="fix-title">Mid-corner Understeer</span></div><div class="fix-sym">Pushes wide at constant throttle</div><ul class="fix-list"><li>Front ARB <span class="fix-dir dn">Soften</span></li><li>Rear camber <span class="fix-dir dn">More negative</span></li><li>Front tyre pressure <span class="fix-dir dn">Lower</span></li><li>Front downforce <span class="fix-dir">Increase</span></li><li>Front ride height <span class="fix-dir dn">Lower</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id u">U3</span><span class="fix-title">Exit Understeer (AWD)</span></div><div class="fix-sym">Front washes on power out of corner</div><ul class="fix-list"><li>Diff accel <span class="fix-dir dn">Reduce slightly</span></li><li>Rear ARB <span class="fix-dir dn">Soften</span></li><li>Rear spring <span class="fix-dir">Stiffen</span></li><li>Rear downforce <span class="fix-dir dn">Reduce</span></li></ul></div>
+    <div class="sec">Oversteer</div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id o">O1</span><span class="fix-title">Entry Oversteer</span></div><div class="fix-sym">Rear steps out on braking/lift-off</div><ul class="fix-list"><li>Rear ARB <span class="fix-dir dn">Soften</span></li><li>Diff decel <span class="fix-dir">Increase (rear)</span></li><li>Brake bias <span class="fix-dir">More front</span></li><li>Rear spring <span class="fix-dir dn">Soften</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id o">O2</span><span class="fix-title">Mid-corner Oversteer</span></div><div class="fix-sym">Rear slides at constant throttle</div><ul class="fix-list"><li>Rear ARB <span class="fix-dir dn">Soften</span></li><li>Rear downforce <span class="fix-dir">Increase</span></li><li>Front ARB <span class="fix-dir">Stiffen</span></li><li>Rear camber <span class="fix-dir dn">More negative</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id o">O3</span><span class="fix-title">Power Oversteer</span></div><div class="fix-sym">Rear breaks free on throttle</div><ul class="fix-list"><li>Diff accel <span class="fix-dir dn">Reduce</span></li><li>Rear downforce <span class="fix-dir">Increase</span></li><li>Rear spring <span class="fix-dir dn">Soften</span></li><li>Rear bump <span class="fix-dir dn">Soften</span></li></ul></div>
+    <div class="sec">Other Problems</div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id b">B1</span><span class="fix-title">Car on Two Wheels</span></div><div class="fix-sym">Lifting inside wheel in corners</div><ul class="fix-list"><li>ARBs <span class="fix-dir">Max/near max</span></li><li>Springs <span class="fix-dir">Stiffen both</span></li><li>Ride height <span class="fix-dir dn">Lower</span></li><li>Rebound <span class="fix-dir">Increase</span></li><li>Front diff accel <span class="fix-dir dn">Reduce</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id b">B2</span><span class="fix-title">Bottoms Out</span></div><ul class="fix-list"><li>Ride height <span class="fix-dir">Raise</span></li><li>Springs <span class="fix-dir">Stiffen</span></li><li>Bump <span class="fix-dir">Stiffen</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id b">B3</span><span class="fix-title">Bouncy / Unstable</span></div><ul class="fix-list"><li>Rebound <span class="fix-dir">Stiffen</span></li><li>Bump <span class="fix-dir">Stiffen slightly</span></li><li>Springs <span class="fix-dir">Stiffen</span></li></ul></div>
+    <div class="fix-card"><div class="fix-hdr"><span class="fix-id b">B4</span><span class="fix-title">Lazy in Chicanes</span></div><ul class="fix-list"><li>ARBs <span class="fix-dir">Stiffen</span></li><li>Rebound <span class="fix-dir">Stiffen</span></li><li>Springs <span class="fix-dir">Stiffen</span></li></ul></div>
+    <p class="note"><b>Key rule:</b> Fix the end with the problem. One change at a time. Diagnose by corner phase. Tweak springs before extremes on damping.</p>
+  </div>
+
+</div><!-- /scroll -->
+
+<!-- SAVE MODAL -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <h3>Save Car</h3>
+    <input type="text" id="save-name" placeholder="Save name">
+    <div class="modal-btns">
+      <button class="mbtn" onclick="closeModal()">Cancel</button>
+      <button class="mbtn primary" onclick="confirmSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const vn=id=>{const e=$(id);return e?parseFloat(e.value):NaN};
+const valid=(a,b)=>!isNaN(a)&&!isNaN(b)&&b>a;
+const clamp=(v,mn,mx)=>Math.min(Math.max(v,mn),mx);
+const fromMin=(mn,mx,p)=>mn+(mx-mn)*p;
+
+function setRes(id,val,dp,cls){
+  const e=$(id);if(!e)return;
+  if(val===null||isNaN(val)){e.textContent='—';e.className=(e.className.includes('single')?'res-single-val':'res-val')+' empty';return;}
+  e.textContent=val.toFixed(dp);
+  e.className=(e.className.includes('single')?'res-single-val':'res-val')+(cls?' '+cls:'');
+}
+
+function getWeightKg(){const w=vn('car-weight'),u=$('weight-unit').value;if(isNaN(w)||w<=0)return null;return u==='lbs'?w*0.453592:w}
+function wFactor(){const kg=getWeightKg();return kg===null?0.5:clamp((kg-700)/1300,0,1)}
+function getFW(){return vn('fw-slider')/100}
+
+// PSI targets by compound — guide says rally 21-26, others higher
+function tyrePSI(){
+  const c=$('tyre-compound').value;
+  const base={rally:23.5,semi:30,slick:30,street:26,sport:27,drift:30,drag:20}[c]||26;
+  const wAdj=(wFactor()-0.5)*3; // heavier = more pressure
+  return base+wAdj;
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  $('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function updateDiffTabs(){
+  const dt=$('drivetrain').value;
+  $('diff-none').classList.toggle('diff-hidden',dt!=='');
+  $('diff-rwd').classList.toggle('diff-hidden',dt!=='rwd');
+  $('diff-fwd').classList.toggle('diff-hidden',dt!=='fwd');
+  $('diff-awd').classList.toggle('diff-hidden',dt!=='awd');
+}
+
+let gearFocus='race';
+const GEAR_DATA={
+  race:{note:'<b>Circuit:</b> As short as possible while avoiding hitting the rev limiter on straights. Stay in power band through corners.',bottom:'<b>Guide:</b> Tune gearing AFTER setting aero — they affect each other.'},
+  sprint:{note:'<b>Sprint:</b> Longer gears for higher top speed on long straights. Accept slower corner acceleration.',bottom:'<b>Sprint:</b> Prioritise top speed over corner exit punch.'},
+  drag:{note:'<b>0–60:</b> Shortest possible gears. Make first gear longer only if hitting limiter immediately off the line.',bottom:'<b>Drag:</b> First gear length is the main variable — too short = limiter, too long = slow.'}
+};
+function setGearFocus(f){
+  gearFocus=f;
+  document.querySelectorAll('.focus-btn').forEach(b=>b.classList.remove('active'));
+  $('focus-'+f).classList.add('active');
+  $('gear-focus-note').innerHTML=GEAR_DATA[f].note;
+  $('gear-bottom-note').innerHTML=GEAR_DATA[f].bottom;
+  calc();
+}
+
+function calc(){
+  const fw=getFW(),rw=1-fw;
+  $('fw-val').textContent=Math.round(fw*100)+'%';
+  $('rw-val').textContent=Math.round(rw*100)+'%';
+  const dt=$('drivetrain').value,wf=wFactor();
+
+  // ── TYRES — fixed 15-55, front/rear differ by axle weight
+  const psi=tyrePSI();
+  // heavier axle = slightly lower pressure (more contact patch needed)
+  setRes('tp-f-res',clamp(psi+(fw-0.5)*(-1.5),15,55),1);
+  setRes('tp-r-res',clamp(psi+(rw-0.5)*(-1.5),15,55),1);
+
+  // ── GEARING — map focus position into provided range
+  const focusPos={race:0.65,sprint:0.45,drag:0.80}[gearFocus]||0.65;
+  const fdMn=vn('fd-min'),fdMx=vn('fd-max');
+  const fdEl=$('fd-res');
+  if(valid(fdMn,fdMx)){
+    const fdVal=fromMin(fdMn,fdMx,focusPos);
+    fdEl.textContent=fdVal.toFixed(2);
+    fdEl.className='res-single-val';
+    $('fd-sub').textContent={race:'65% toward accel (circuit)',sprint:'45% toward speed',drag:'80% toward accel (drag)'}[gearFocus];
+  } else {
+    fdEl.textContent='—';
+    fdEl.className='res-single-val empty';
+    $('fd-sub').textContent='Enter min/max above';
+  }
+
+  // ── ALIGNMENT — fixed ranges, guide-specific values
+  // Camber: guide says -0.5 to -1.0 front, -0.3 to -0.5 rear
+  // Scale slightly within those ranges based on weight/drivetrain
+  let camF,camR;
+  if(dt==='rwd'){camF=-0.8;camR=-0.4;}
+  else if(dt==='fwd'){camF=-0.6;camR=-0.7;}
+  else{camF=-0.7;camR=-0.4;} // AWD: guide says -0.5/-0.3 as example
+  // nudge slightly more negative for heavier cars
+  camF=clamp(camF-(wf-0.5)*0.3,-1.0,0.0);
+  camR=clamp(camR-(wf-0.5)*0.2,-0.8,0.0);
+  setRes('ca-f-res',camF,1);
+  setRes('ca-r-res',camR,1);
+  // Toe: near zero, slight rear toe-in for RWD
+  setRes('toe-f-res',0.0,1);
+  setRes('toe-r-res',dt==='rwd'?-0.1:0.0,1);
+  // Caster: 7.0
+  setRes('cast-res',7.0,1);
+
+  // ── ARBs — fixed 1-65
+  // Guide: AWD starts at 1F/65R. RWD front < rear.
+  // Front: lower for AWD (to reduce understeer), scale with weight
+  let arbF,arbR;
+  if(dt==='awd'){
+    // Guide says 1/65 as starting point for AWD
+    arbF=clamp(1+(fw-0.5)*20+(wf-0.5)*10,1,40);
+    arbR=65; // start max rear for AWD
+  } else if(dt==='rwd'){
+    arbF=clamp(20+(fw-0.5)*15+(wf-0.5)*12,10,50);
+    arbR=clamp(55+(rw-0.5)*10+(wf-0.5)*8,35,65);
+  } else {
+    arbF=clamp(40+(fw-0.5)*15+(wf-0.5)*10,25,65);
+    arbR=clamp(30+(rw-0.5)*10+(wf-0.5)*8,15,55);
+  }
+  setRes('arb-f-res',arbF,1);
+  setRes('arb-r-res',arbR,1);
+
+  // ── SPRINGS — single min/max, unique front/rear
+  // Guide: align with weight dist, soft overall. Rear heavier = higher rear springs.
+  const spMn=vn('sp-min'),spMx=vn('sp-max');
+  // base ~30% of range (soft), heavier axle gets higher value
+  const spFPos=clamp(0.30+(fw-0.5)*0.35+(wf-0.5)*0.15,0.15,0.60);
+  const spRPos=clamp(0.30+(rw-0.5)*0.35+(wf-0.5)*0.15,0.15,0.60);
+  setRes('sp-f-res',valid(spMn,spMx)?fromMin(spMn,spMx,spFPos):null,1);
+  setRes('sp-r-res',valid(spMn,spMx)?fromMin(spMn,spMx,spRPos):null,1);
+
+  // ── RIDE HEIGHT — single min/max, front=max, rear=low
+  const rhMn=vn('rh-min'),rhMx=vn('rh-max');
+  const rhFEl=$('rh-f-res'),rhREl=$('rh-r-res');
+  if(valid(rhMn,rhMx)){
+    rhFEl.textContent=rhMx.toFixed(1); rhFEl.className='res-val';
+    rhREl.textContent=fromMin(rhMn,rhMx,0.25).toFixed(1); rhREl.className='res-val';
+  } else {
+    rhFEl.textContent='—'; rhFEl.className='res-val empty';
+    rhREl.textContent='—'; rhREl.className='res-val empty';
+  }
+
+  // ── DAMPING — fixed 1-20
+  // Guide: rebound ~8-11 (middle), bump very low ~3-5
+  // Higher rear bump for rotation
+  const rbFTarget=clamp(8.5+(fw-0.5)*2+(wf-0.5)*2,7,13);
+  const rbRTarget=clamp(9.5+(rw-0.5)*2+(wf-0.5)*2,8,14); // rear slightly higher
+  setRes('rb-f-res',clamp(rbFTarget,1,20),1);
+  setRes('rb-r-res',clamp(rbRTarget,1,20),1);
+  // Bump: ~40% of rebound, rear slightly higher for rotation
+  setRes('bm-f-res',clamp(rbFTarget*0.38,1,20),1);
+  setRes('bm-r-res',clamp(rbRTarget*0.45,1,20),1); // rear bump slightly higher
+
+  // ── AERO — single min/max, front=max, rear=~35%
+  const aeMn=vn('ae-min'),aeMx=vn('ae-max');
+  const aeFEl=$('ae-f-res'),aeREl=$('ae-r-res');
+  if(valid(aeMn,aeMx)){
+    aeFEl.textContent=Math.round(aeMx); aeFEl.className='res-val';
+    aeREl.textContent=Math.round(fromMin(aeMn,aeMx,0.35)); aeREl.className='res-val';
+  } else {
+    aeFEl.textContent='—'; aeFEl.className='res-val empty';
+    aeREl.textContent='—'; aeREl.className='res-val empty';
+  }
+
+  // ── BRAKES — fixed 0-100 balance, 0-200 pressure
+  // Guide: 48-49% (toward rear for rotation)
+  setRes('br-bal-res',Math.round(clamp(48+(fw-0.5)*4,46,52)),0);
+  setRes('br-pres-res',100,0);
+
+  // ── DIFF — fixed 0-100
+  if(dt==='rwd'){
+    // Guide: accel as high as possible 80-100%, decel start 0
+    setRes('df-r-acc-res',100,0);
+    setRes('df-r-dec-res',0,0);
+  } else if(dt==='fwd'){
+    setRes('df-f-acc-res',100,0);
+    setRes('df-f-dec-res',0,0);
+  } else if(dt==='awd'){
+    // Guide: 100% both front and rear accel, decel 0 (rear +5 if needed)
+    setRes('df-af-acc-res',100,0);
+    setRes('df-af-dec-res',0,0);
+    setRes('df-ar-acc-res',100,0);
+    setRes('df-ar-dec-res',0,0);
+    // Centre: 80-84% rear
+    const cMin=vn('df-ctr-min'),cMax=vn('df-ctr-max');
+    // target 80% of the way through range toward rear bias
+    setRes('df-ctr-res',valid(cMin,cMax)?clamp(fromMin(cMin,cMax,0.80),cMin,cMax):80,0);
+  }
+}
+
+// ── GARAGE ─────────────────────────────────────────────────────────────────
+const FIELDS=['car-name','car-class','drivetrain','car-power','car-weight','weight-unit','tyre-compound','fw-slider',
+  'fd-min','fd-max','sp-min','sp-max','rh-min','rh-max','ae-min','ae-max','df-ctr-min','df-ctr-max'];
+function readState(){const s={};FIELDS.forEach(id=>{const e=$(id);if(e)s[id]=e.value});return s}
+function applyState(s){FIELDS.forEach(id=>{const e=$(id);if(e&&s[id]!==undefined)e.value=s[id]});updateDiffTabs();setGearFocus(gearFocus);calc()}
+function loadGarage(){try{return JSON.parse(localStorage.getItem('fh6_garage_g4')||'[]')}catch{return[]}}
+function saveGarage(g){localStorage.setItem('fh6_garage_g4',JSON.stringify(g))}
+function renderGarage(){
+  const g=loadGarage(),list=$('garage-list');
+  if(!g.length){list.innerHTML='<span style="font-size:11px;color:var(--muted)">No saved cars yet.</span>';return}
+  list.innerHTML='';
+  g.forEach((car,i)=>{
+    const d=document.createElement('div');d.className='gc';
+    d.innerHTML=`<div><div class="gc-name">${car.label}</div><div class="gc-meta">${car.state['car-class']||''} · ${(car.state['drivetrain']||'').toUpperCase()}</div></div><button class="gc-del" onclick="delCar(${i});event.stopPropagation()">×</button>`;
+    d.onclick=()=>{applyState(car.state);toggleGarage()};
+    list.appendChild(d);
+  });
+}
+function delCar(i){const g=loadGarage();g.splice(i,1);saveGarage(g);renderGarage()}
+function toggleGarage(){const p=$('garage-panel');p.classList.toggle('open');if(p.classList.contains('open'))renderGarage()}
+function openSave(){$('save-name').value=$('car-name').value||'My Car';$('save-modal').classList.add('open');$('save-name').focus()}
+function closeModal(){$('save-modal').classList.remove('open')}
+function confirmSave(){
+  const label=$('save-name').value.trim()||'Unnamed';
+  const g=loadGarage();g.push({label,state:readState()});saveGarage(g);closeModal();renderGarage();
+}
+
+// ── LIVE STATS ──────────────────────────────────────────────────────────────
+let liveOpen=false;
+function toggleLive(){liveOpen=!liveOpen;$('live-body').classList.toggle('open',liveOpen);$('live-toggle').textContent=liveOpen?'▲ collapse':'▼ expand'}
+function setInd(id,cls,txt){const e=$(id);if(e){e.className='live-ind '+cls;e.textContent=txt}}
+function setDelta(id,b,a,lower){
+  const e=$(id);if(!e)return;
+  if(isNaN(b)||isNaN(a)){e.textContent='—';e.className='perf-d same';return}
+  const diff=a-b,ok=lower?diff<0:diff>0;
+  e.textContent=(diff>0?'+':'')+diff.toFixed(Math.abs(diff)<1?3:1);
+  e.className='perf-d '+(ok?'better':diff===0?'same':'worse');
+}
+function updateLive(){
+  const m=parseFloat($('lv-mech').value);
+  if(!isNaN(m)){if(m>=0.55&&m<=0.65)setInd('lv-mech-ind','good','✓');else if(m<0.55)setInd('lv-mech-ind','low','Low');else setInd('lv-mech-ind','high','High');}
+  else setInd('lv-mech-ind','neutral','—');
+  const ab=parseFloat($('lv-aero-bal').value);
+  if(!isNaN(ab)){if(ab>=0.40&&ab<=0.45)setInd('lv-aero-bal-ind','good','✓');else if(ab<0.40)setInd('lv-aero-bal-ind','low','Low');else setInd('lv-aero-bal-ind','high','High');}
+  else setInd('lv-aero-bal-ind','neutral','—');
+  const ae=parseFloat($('lv-aero-eff').value);
+  if(!isNaN(ae)){if(ae>=0.85)setInd('lv-aero-eff-ind','good','Good');else if(ae>=0.70)setInd('lv-aero-eff-ind','low','Mod');else setInd('lv-aero-eff-ind','high','Drag');}
+  else setInd('lv-aero-eff-ind','neutral','—');
+  setDelta('pd-bk60',parseFloat($('pf-bk60-b').value),parseFloat($('pf-bk60-a').value),true);
+  setDelta('pd-ac60',parseFloat($('pf-ac60-b').value),parseFloat($('pf-ac60-a').value),true);
+  setDelta('pd-spd',parseFloat($('pf-spd-b').value),parseFloat($('pf-spd-a').value),false);
+  setDelta('pd-lg',parseFloat($('pf-lg-b').value),parseFloat($('pf-lg-a').value),false);
+}
+
+// ── PWA ─────────────────────────────────────────────────────────────────────
+const manifest={name:'FH6 Tune G4',short_name:'FH6 G4',display:'standalone',background_color:'#0a0f1a',theme_color:'#2d8cff',start_url:'.',icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="80" fill="#0a0f1a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial Black" font-size="180" font-weight="900" fill="#2d8cff">G4</text><text x="50%" y="78%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="72" fill="#4a6080">TUNE</text></svg>'),sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+$('pwa-manifest').href=URL.createObjectURL(mBlob);
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)))});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))).catch(()=>{});
+}
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+$('save-modal').addEventListener('click',e=>{if(e.target===$('save-modal'))closeModal()});
+$('fw-slider').addEventListener('input',calc);
+updateDiffTabs();setGearFocus('race');calc();
+</script>
+</body>
+</html>
