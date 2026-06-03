@@ -379,7 +379,7 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
       <div class="fg"><label>Min</label><input type="number" step="0.1" id="rh-min" placeholder="min" oninput="calc()"></div>
       <div class="fg"><label>Max</label><input type="number" step="0.1" id="rh-max" placeholder="max" oninput="calc()"></div>
     </div>
-    <div class="res-header"><span>Axle</span><span>Front</span><span>Rear</span></div>
+    <div class="res-header"><span>Axle</span><span>Front (max)</span><span>Rear (low)</span></div>
     <div class="res-row"><div class="res-label">Ride height</div><div class="res-val empty" id="rh-f-res">—</div><div class="res-val empty" id="rh-r-res">—</div></div>
     <p class="note">
       <b>Guide:</b> Springs align with weight distribution — rear-heavy car needs higher rear springs. Soft overall settings preferred.<br>
@@ -411,7 +411,7 @@ input[type=range]{flex:1;accent-color:var(--accent);height:4px}
       <div class="fg"><label>Min</label><input type="number" step="1" id="ae-min" placeholder="min" oninput="calc()"></div>
       <div class="fg"><label>Max</label><input type="number" step="1" id="ae-max" placeholder="max" oninput="calc()"></div>
     </div>
-    <div class="res-header"><span>Setting</span><span>Front</span><span>Rear</span></div>
+    <div class="res-header"><span>Setting</span><span>Front (max)</span><span>Rear (~35%)</span></div>
     <div class="res-row"><div class="res-label">Downforce</div><div class="res-val empty" id="ae-f-res">—</div><div class="res-val empty" id="ae-r-res">—</div></div>
     <p class="note">
       <b>Guide:</b> Front always maximum downforce for highest corner speed in high-speed turns.<br>
@@ -582,11 +582,15 @@ function calc(){
   // ── GEARING — map focus position into provided range
   const focusPos={race:0.65,sprint:0.45,drag:0.80}[gearFocus]||0.65;
   const fdMn=vn('fd-min'),fdMx=vn('fd-max');
+  const fdEl=$('fd-res');
   if(valid(fdMn,fdMx)){
-    setRes('fd-res',fromMin(fdMn,fdMx,focusPos),2);
+    const fdVal=fromMin(fdMn,fdMx,focusPos);
+    fdEl.textContent=fdVal.toFixed(2);
+    fdEl.className='res-single-val';
     $('fd-sub').textContent={race:'65% toward accel (circuit)',sprint:'45% toward speed',drag:'80% toward accel (drag)'}[gearFocus];
   } else {
-    $('fd-res').textContent='—';$('fd-res').className='res-single-val empty';
+    fdEl.textContent='—';
+    fdEl.className='res-single-val empty';
     $('fd-sub').textContent='Enter min/max above';
   }
 
@@ -635,11 +639,16 @@ function calc(){
   setRes('sp-f-res',valid(spMn,spMx)?fromMin(spMn,spMx,spFPos):null,1);
   setRes('sp-r-res',valid(spMn,spMx)?fromMin(spMn,spMx,spRPos):null,1);
 
-  // ── RIDE HEIGHT — single min/max
-  // Guide: max front for turn-in, lower rear for rotation/top speed
+  // ── RIDE HEIGHT — single min/max, front=max, rear=low
   const rhMn=vn('rh-min'),rhMx=vn('rh-max');
-  setRes('rh-f-res',valid(rhMn,rhMx)?rhMx:null,1); // max front
-  setRes('rh-r-res',valid(rhMn,rhMx)?fromMin(rhMn,rhMx,0.25):null,1); // low rear
+  const rhFEl=$('rh-f-res'),rhREl=$('rh-r-res');
+  if(valid(rhMn,rhMx)){
+    rhFEl.textContent=rhMx.toFixed(1); rhFEl.className='res-val';
+    rhREl.textContent=fromMin(rhMn,rhMx,0.25).toFixed(1); rhREl.className='res-val';
+  } else {
+    rhFEl.textContent='—'; rhFEl.className='res-val empty';
+    rhREl.textContent='—'; rhREl.className='res-val empty';
+  }
 
   // ── DAMPING — fixed 1-20
   // Guide: rebound ~8-11 (middle), bump very low ~3-5
@@ -652,11 +661,16 @@ function calc(){
   setRes('bm-f-res',clamp(rbFTarget*0.38,1,20),1);
   setRes('bm-r-res',clamp(rbRTarget*0.45,1,20),1); // rear bump slightly higher
 
-  // ── AERO — single min/max
-  // Guide: front always max, rear adjusted for stability (~low-mid)
+  // ── AERO — single min/max, front=max, rear=~35%
   const aeMn=vn('ae-min'),aeMx=vn('ae-max');
-  setRes('ae-f-res',valid(aeMn,aeMx)?aeMx:null,0); // max front
-  setRes('ae-r-res',valid(aeMn,aeMx)?fromMin(aeMn,aeMx,0.35):null,0); // ~35% rear starting point
+  const aeFEl=$('ae-f-res'),aeREl=$('ae-r-res');
+  if(valid(aeMn,aeMx)){
+    aeFEl.textContent=Math.round(aeMx); aeFEl.className='res-val';
+    aeREl.textContent=Math.round(fromMin(aeMn,aeMx,0.35)); aeREl.className='res-val';
+  } else {
+    aeFEl.textContent='—'; aeFEl.className='res-val empty';
+    aeREl.textContent='—'; aeREl.className='res-val empty';
+  }
 
   // ── BRAKES — fixed 0-100 balance, 0-200 pressure
   // Guide: 48-49% (toward rear for rotation)
